@@ -2,6 +2,10 @@ def symbol(s):
     return s == '!' or s == '&' or s == '|' or s == '=' or s == '==' or None
 
 
+def sigma(s):
+    return s == 'p' or s == 'q' or s == 'r' or s == 's' or None
+
+
 def extract_sub_formula(n, m, f, sf):
     key = 'sb' + str(n)
     sub = {key: '('}
@@ -20,7 +24,7 @@ def extract_sub_formula(n, m, f, sf):
         q += 1
 
 
-def tour_formula(signature, formula, sf):
+def tour_formula(formula, sf):
     f = formula
     n = 0
     max = len(f)
@@ -35,9 +39,13 @@ def tour_formula(signature, formula, sf):
                     m += f[x]
                 print('Error de formula en : ', m)
                 return formula
-        elif f == 'sb0' or symbol(f[n]) and f[n + 1] + f[n + 2] == 'sb' and max <= 4:
+        elif sigma(f[n]) or f == 'sb0' or symbol(f[n]) and f[n + 1] + f[n + 2] == 'sb' and max <= 4:
             formula = ''
             print('Formula bien formada')
+            return formula
+        elif not sigma(f[n]):
+            formula = ''
+            print('Error de formula, valor "{valor}" no pertenece a sigma.'.format(valor=f[n]))
             return formula
 
         n += 1
@@ -72,27 +80,43 @@ def assemble_sf(sf, f):
     return f
 
 
-def reuse(s, f, sf):
+def valid_sf(f):
+    n = 0
+    s = True
+    m = len(f)
+    while n < m:
+        if symbol(f[n]) or sigma(f[n]) or f[n] == '(' or f[n] == ')':
+            pass
+        else:
+            s = False
+            print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n]))
+
+        n += 1
+
+    return s
+
+
+def reuse(f, sf):
     sf = []
     _f = f
-    _f = tour_formula(s, _f, sf)
+    _f = tour_formula(_f, sf)
     if _f:
         f = assemble_sf(sf, _f)
-        print('F: ', f)
         if len(f) > 0:
-            reuse(s, f, sf)
+            reuse(f, sf)
 
 
 def __main__():
-    signature = ['p', 'q', 'r', 's']
-    formula = '(p&q)'
+    formula = '(pp|u)'
     sf = []
-    tour_formula(signature, formula, sf)
-    _f = formula
-    f = assemble_sf(sf, _f)
+    j = valid_sf(formula)
+    if j:
+        tour_formula(formula, sf)
+        _f = formula
+        f = assemble_sf(sf, _f)
 
-    if len(f) > 0:
-        reuse(signature, f, sf)
+        if len(f) > 0 and f != 'sb0' and f != formula:
+            reuse(f, sf)
 
 
 if __name__ == '__main__':
