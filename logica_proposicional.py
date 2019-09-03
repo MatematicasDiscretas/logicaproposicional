@@ -98,10 +98,6 @@ def tour_formula(formula, sf):
             formula = ''
             print('Formula bien formada')
             return formula
-        # elif not sigma(f[n]):
-        #     formula = ''
-        #     print('Error de formula, valor "{valor}" no pertenece a sigma.'.format(valor=f[n]))
-        #     return formula
 
         n += 1
 
@@ -116,7 +112,7 @@ def assemble_sf(sf, f):
         k = list(r.keys())[0]
         v = sf[n][k]
 
-        s1 = f.find(v)  # Posición antes de la sub formula
+        s1 = f.find(v)  # Position before the sub formula
 
         # Exist binary symbol
         try:
@@ -147,7 +143,7 @@ def reuse(f):
 
 
 def __main__():
-    f = '((p-q)-s))'
+    f = '((p-q)-s)'
     v = valid_formula(f)
     sf = []
     if v:
