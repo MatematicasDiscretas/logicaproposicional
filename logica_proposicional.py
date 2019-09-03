@@ -45,7 +45,7 @@ def valid_formula(f):
 
                 # Validate two or more values of the same type
                 # Example: (pp-q) Error, (p--q) Error
-                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1])):
+                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1])) or (f[n] == ')' and sigma(f[n + 1])) or (f[n] == '(' and sigma(f[n -1])):
                     print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n] + f[n + 1]))
                     return False
 
