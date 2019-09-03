@@ -1,9 +1,64 @@
 def symbol(s):
-    return s == '!' or s == '&' or s == '|' or s == '=' or s == '==' or None
+    """
+    Check Binary Connectors or operators of the formula
+    ! = Negation
+    & = Conjunction
+    | = Disjunction
+    "-" = Implication
+    "=" = BiConditional
+    :param s: param connector
+    :return: connector or None if not exist
+    """
+    return s == '!' or s == '&' or s == '|' or s == '-' or s == '=' or None
 
 
 def sigma(s):
-    return s == 'p' or s == 'q' or s == 'r' or s == 's' or None
+    """
+    Values of formula At
+    :param s: value of formula At
+    :return: value of At or None
+    """
+    return s == 'p' or s == 'q' or s == 'r' or s == 's' or s == 'T' or s == 'V' or None
+
+
+def valid_formula(f):
+    """
+    Valid if the characters of the formula are part of it
+    :param f: formula
+    :return: True if formula valid or False if not
+    """
+    n = 0
+    s = True
+    m = len(f)
+    while n < m:
+        if symbol(f[n]) or sigma(f[n]) or f[n] == '(' or f[n] == ')':
+            try:
+                # Check position of Binary Connectors or operators of the formula
+                if n > 0 and f[n] != '(' and f[n] != ')' and symbol(f[n]):
+                    # Forward or backward of a connector there can only be one value of At
+                    # Example: (p=&) Error, or p-) Error, (p-q), True
+                    if not sigma(f[n + 1]) or not sigma(f[n - 1]):
+                        if f[n + 1] == ')' or f[n - 1] == '(':
+                            print('Error de formula, "{valor}" no es un valor válido.'.format(
+                                valor=f[n] + (f[n + 1] if not sigma(f[n + 1]) else not f[n - 1])))
+                            return False
+
+                # Validate two or more values of the same type
+                # Example: (pp-q) Error, (p--q) Error
+                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1])):
+                    print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n] + f[n + 1]))
+                    return False
+
+            except:
+                pass
+
+        else:
+            s = False
+            print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n]))
+
+        n += 1
+
+    return s
 
 
 def extract_sub_formula(n, m, f, sf):
@@ -39,14 +94,14 @@ def tour_formula(formula, sf):
                     m += f[x]
                 print('Error de formula en : ', m)
                 return formula
-        elif sigma(f[n]) or f == 'sb0' or symbol(f[n]) and f[n + 1] + f[n + 2] == 'sb' and max <= 4:
+        elif f == 'sb0' or max <= 5:
             formula = ''
             print('Formula bien formada')
             return formula
-        elif not sigma(f[n]):
-            formula = ''
-            print('Error de formula, valor "{valor}" no pertenece a sigma.'.format(valor=f[n]))
-            return formula
+        # elif not sigma(f[n]):
+        #     formula = ''
+        #     print('Error de formula, valor "{valor}" no pertenece a sigma.'.format(valor=f[n]))
+        #     return formula
 
         n += 1
 
@@ -80,43 +135,27 @@ def assemble_sf(sf, f):
     return f
 
 
-def valid_sf(f):
-    n = 0
-    s = True
-    m = len(f)
-    while n < m:
-        if symbol(f[n]) or sigma(f[n]) or f[n] == '(' or f[n] == ')':
-            pass
-        else:
-            s = False
-            print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n]))
-
-        n += 1
-
-    return s
-
-
-def reuse(f, sf):
+def reuse(f):
     sf = []
-    _f = f
-    _f = tour_formula(_f, sf)
+    _f = tour_formula(f, sf)
     if _f:
         f = assemble_sf(sf, _f)
-        if len(f) > 0:
-            reuse(f, sf)
+        if len(f) > 0 and f != 'sb0' and f != _f:
+            reuse(f)
+        else:
+            print('Formula bien formada')
 
 
 def __main__():
-    formula = '(pp|u)'
+    f = '((p-q)-s))'
+    v = valid_formula(f)
     sf = []
-    j = valid_sf(formula)
-    if j:
-        tour_formula(formula, sf)
-        _f = formula
-        f = assemble_sf(sf, _f)
+    if v:
+        tour_formula(f, sf)
+        _f = assemble_sf(sf, f)
 
-        if len(f) > 0 and f != 'sb0' and f != formula:
-            reuse(f, sf)
+        if len(_f) > 0 and _f != 'sb0' and f != _f:
+            reuse(_f)
 
 
 if __name__ == '__main__':
