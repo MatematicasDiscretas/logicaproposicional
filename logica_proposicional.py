@@ -38,14 +38,14 @@ def valid_formula(f):
                     # Forward or backward of a connector there can only be one value of At
                     # Example: (p=&) Error, or p-) Error, (p-q), True
                     if not sigma(f[n + 1]) or not sigma(f[n - 1]):
-                        if f[n + 1] == ')' or f[n - 1] == '(':
+                        if f[n + 1] == ')' or (f[n - 1] == '(' and f[n] != '!'):
                             print('Error de formula, "{valor}" no es un valor válido.'.format(
                                 valor=f[n] + (f[n + 1] if not sigma(f[n + 1]) else not f[n - 1])))
                             return False
 
                 # Validate two or more values of the same type
                 # Example: (pp-q) Error, (p--q) Error
-                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1])) or (f[n] == ')' and sigma(f[n + 1])) or (f[n] == '(' and sigma(f[n -1])):
+                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1]) and f[n + 1] != '!') or (f[n] == ')' and sigma(f[n + 1])) or (f[n] == '(' and sigma(f[n -1])):
                     print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n] + f[n + 1]))
                     return False
 
@@ -143,7 +143,7 @@ def reuse(f):
 
 
 def __main__():
-    f = '((p-q)-s)'
+    f = '(!(p-q)-s)'
     v = valid_formula(f)
     sf = []
     if v:
