@@ -18,7 +18,7 @@ def sigma(s):
     :param s: value of formula At
     :return: value of At or None
     """
-    return s == 'p' or s == 'q' or s == 'r' or s == 's' or s == 'T' or s == 'V' or None
+    return s == 'p' or s == 'q' or s == 'r' or s == 's' or s == 'T' or s == 'F' or None
 
 
 def valid_formula(f):
@@ -39,14 +39,15 @@ def valid_formula(f):
                     # Example: (p=&) Error, or p-) Error, (p-q), True
                     if not sigma(f[n + 1]) or not sigma(f[n - 1]):
                         if f[n + 1] == ')' or (f[n - 1] == '(' and f[n] != '!'):
-                            print('Error de formula, "{valor}" no es un valor válido.'.format(
-                                valor=f[n] + (f[n + 1] if not sigma(f[n + 1]) else not f[n - 1])))
+                            print('Formula error, "{value}" is not a valid value.'.format(
+                                value=f[n] + (f[n + 1] if not sigma(f[n + 1]) else not f[n - 1])))
                             return False
 
                 # Validate two or more values of the same type
                 # Example: (pp-q) Error, (p--q) Error
-                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1]) and f[n + 1] != '!') or (f[n] == ')' and sigma(f[n + 1])) or (f[n] == '(' and sigma(f[n -1])):
-                    print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n] + f[n + 1]))
+                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1]) and f[n + 1] != '!') or (
+                        f[n] == ')' and sigma(f[n + 1])) or (f[n] == '(' and sigma(f[n - 1])):
+                    print('Formula error, "{value}" is not a valid value.'.format(value=f[n] + f[n + 1]))
                     return False
 
             except:
@@ -54,7 +55,7 @@ def valid_formula(f):
 
         else:
             s = False
-            print('Error de formula, "{valor}" no es un valor válido.'.format(valor=f[n]))
+            print('Formula error, "{value}" is not a valid value.'.format(value=f[n]))
 
         n += 1
 
@@ -92,11 +93,11 @@ def tour_formula(formula, sf):
                 m = ''
                 for x in range(n, max):
                     m += f[x]
-                print('Error de formula en : ', m)
+                print('Formula error in:', m)
                 return formula
         elif f == 'sb0' or max <= 5:
             formula = ''
-            print('Formula bien formada')
+            print('Status: Ok, Well formed formula')
             return formula
 
         n += 1
@@ -139,11 +140,47 @@ def reuse(f):
         if len(f) > 0 and f != 'sb0' and f != _f:
             reuse(f)
         else:
-            print('Formula bien formada')
+            print('Status: Ok, Well formed formula')
 
 
 def __main__():
     f = '(!(p-q)-s)'
+    n = int(input("""
+        ||       |||||||
+        ||       ||    ||
+        ||       |||||||
+        ||       ||
+        |||||||  ||
+        
+        Welcome.
+        
+        Select 1 if you want to enter a new formula or 2 to evaluate default formula: [1/2] """))
+
+    if n == 1:
+        f = input("""
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+        
+        Binary Connectors:
+        & = Conjunction
+        | = Disjunction
+        "-" = Implication
+        "=" = BiConditional
+        
+        Allowed SIGMA Values: 'p, q, r, s'
+        
+        False and certainty constants respectively: 'F, V'
+        
+        Negation: '!'
+        
+        Example of formula: (!(p-q)-s)
+        
+        /////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////
+        
+        Enter your formula: """)
+
+    print('Formula to evaluate: {formula}'.format(formula=f))
     v = valid_formula(f)
     sf = []
     if v:
