@@ -18,12 +18,13 @@ def sigma(s):
     :param s: value of formula At
     :return: value of At or None
     """
-    return s == 'p' or s == 'q' or s == 'r' or s == 's' or s == 'T' or s == 'F' or None
+    s = s.lower()
+    return s == 'p' or s == 'q' or s == 'r' or s == 's' or s == 't' or s == 'f' or None
 
 
 def valid_formula(f):
     """
-    Valid if the characters of the formula are part of it
+    Valid if the characters of the formula are part of it, positions of characters.
     :param f: formula
     :return: True if formula valid or False if not
     """
@@ -44,10 +45,12 @@ def valid_formula(f):
                             return False
 
                 # Validate two or more values of the same type
-                # Example: (pp-q) Error, (p--q) Error
-                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1]) and f[n + 1] != '!') or (
-                        f[n] == ')' and sigma(f[n + 1])) or (f[n] == '(' and sigma(f[n - 1])):
-                    print('Formula error, "{value}" is not a valid value.'.format(value=f[n] + f[n + 1]))
+                # Example: (pp-q) Error, (p--q) Error, (p-) Error, (p-q)s Error, s(p=q) Error
+                if (sigma(f[n]) and sigma(f[n + 1])) or (symbol(f[n]) and symbol(f[n + 1]) and f[n + 1] != '!') or \
+                        (f[n] == ')' and sigma(f[n + 1])) or (f[n] == '(' and sigma(f[n - 1])) or \
+                        (sigma(f[n]) and symbol(f[n + 1]) and f[n + 1] == '!'):
+                    m = (f[n - 1] + f[n]) if (f[n] == '(' and sigma(f[n - 1])) else f[n] + f[n + 1]
+                    print('Formula error, "{value}" is not a valid value.'.format(value=m))
                     return False
 
             except:
@@ -145,6 +148,32 @@ def __main__(f):
             print('Status: Ok, Well formed formula')
 
 
+def count_parenthesis(f):
+    """
+    Count parentheses of formula
+    :param f: formula
+    :return: True is equal or False is they are different
+    """
+    n = 0
+    p_o = 0
+    p_c = 0
+    while n < len(f):
+        if f[n] == '(':
+            p_o += 1
+        if f[n] == ')':
+            p_c += 1
+
+        n += 1
+
+    if p_o == p_c:
+        return True
+
+    print(
+        """Formula error, there is no equal number of opening and closing parentheses. \n 
+        Open: {open}, Close: {close}""".format(open=p_o, close=p_c))
+    return False
+
+
 def capture_data():
     formula = '(!(p-q)-s)'
     n = int(input("""
@@ -171,7 +200,7 @@ def capture_data():
 
             Allowed SIGMA Values: 'p, q, r, s'
 
-            False and certainty constants respectively: 'F, V'
+            False and certainty constants respectively: 'F, T'
 
             Negation: '!'
 
@@ -187,6 +216,5 @@ def capture_data():
 
 if __name__ == '__main__':
     f = capture_data()
-    v = valid_formula(f)
-    if v:
+    if valid_formula(f) and count_parenthesis(f):
         __main__(f)
