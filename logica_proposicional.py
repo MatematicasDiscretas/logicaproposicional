@@ -132,64 +132,61 @@ def assemble_sf(sf, f):
     return f
 
 
-def reuse(f):
+def __main__(f):
+    print('Formula to evaluate: {formula}'.format(formula=f))
     sf = []
     _f = tour_formula(f, sf)
+
     if _f:
         f = assemble_sf(sf, _f)
         if len(f) > 0 and f != 'sb0' and f != _f:
-            reuse(f)
+            __main__(f)
         else:
             print('Status: Ok, Well formed formula')
 
 
-def __main__():
-    f = '(!(p-q)-s)'
+def capture_data():
+    formula = '(!(p-q)-s)'
     n = int(input("""
-        ||       |||||||
-        ||       ||    ||
-        ||       |||||||
-        ||       ||
-        |||||||  ||
-        
-        Welcome.
-        
-        Select 1 if you want to enter a new formula or 2 to evaluate default formula: [1/2] """))
+            ||       |||||||
+            ||       ||    ||
+            ||       |||||||
+            ||       ||
+            |||||||  ||
+
+            Welcome.
+
+            Select 1 if you want to enter a new formula or 2 to evaluate default formula: [1/2] """))
 
     if n == 1:
-        f = input("""
-        /////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////
-        
-        Binary Connectors:
-        & = Conjunction
-        | = Disjunction
-        "-" = Implication
-        "=" = BiConditional
-        
-        Allowed SIGMA Values: 'p, q, r, s'
-        
-        False and certainty constants respectively: 'F, V'
-        
-        Negation: '!'
-        
-        Example of formula: (!(p-q)-s)
-        
-        /////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////
-        
-        Enter your formula: """)
+        formula = input("""
+            /////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////
 
-    print('Formula to evaluate: {formula}'.format(formula=f))
-    v = valid_formula(f)
-    sf = []
-    if v:
-        tour_formula(f, sf)
-        _f = assemble_sf(sf, f)
+            Binary Connectors:
+            & = Conjunction
+            | = Disjunction
+            "-" = Implication
+            "=" = BiConditional
 
-        if len(_f) > 0 and _f != 'sb0' and f != _f:
-            reuse(_f)
+            Allowed SIGMA Values: 'p, q, r, s'
+
+            False and certainty constants respectively: 'F, V'
+
+            Negation: '!'
+
+            Example of formula: (!(p-q)-s)
+
+            /////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////////
+
+            Enter your formula: """)
+
+    return formula
 
 
 if __name__ == '__main__':
-    __main__()
+    f = capture_data()
+    v = valid_formula(f)
+    if v:
+        __main__(f)
